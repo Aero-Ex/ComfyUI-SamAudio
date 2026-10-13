@@ -1,0 +1,14 @@
+[project]
+name = "ComfyUI-SamAudio"
+description = "Native dependency-free port of Meta SAM-Audio (Segment Anything Model for Audio) for ComfyUI."
+version = "1.0.0"
+license = "MIT"
+readme = "README.md"
+requires-python = ">=3.9"
+
+[project.urls]
+Repository = "https://github.com/Aero-Ex/ComfyUI-SamAudio"
+[tool.comfy]
+PublisherId = "aerox"
+DisplayName = "SAM-Audio"
+Icon = ""

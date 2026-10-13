@@ -1,0 +1,341 @@
+{
+  "id": "18fca510-ce86-402f-87ce-db443ffb85dc",
+  "revision": 0,
+  "last_node_id": 21,
+  "last_link_id": 22,
+  "nodes": [
+    {
+      "id": 17,
+      "type": "Note",
+      "pos": [
+        -725.5639712406263,
+        -180.63876489593463
+      ],
+      "size": [
+        438.0420417593003,
+        416.316893874708
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Download Models",
+      "properties": {
+        "text": ""
+      },
+      "widgets_values": [
+        "SAM-Audio Models & Setup Guide\n\n1. Download SAM-Audio Model (Base or Large):\n   Repo: https://huggingface.co/Aero-Ex/ComfyUI-SamAudio\n   Files:\n   - sam_audio_base.safetensors (1.73 GB - fast, daily driver)\n   - sam_audio_large.safetensors (6.38 GB - maximum separation fidelity)\n\n   Place in folder:\n   📂 ComfyUI/models/sam-audio/\n\n2. Download T5-Base Text Encoder:\n   File: t5-base.safetensors (892 MB)\n   Repo: https://huggingface.co/Comfy-Org/t5-base/\n\n   Place in folder:\n   📂 ComfyUI/models/text_encoders/\n\n3. Tips:\n   - CFG = 1.0 (default)\n   - Set Steps = 16 or 32 with 'midpoint' method\n   - target_audio = isolated sound\n   - residual_audio = background / remainder"
+      ],
+      "widgets_values_named": {
+        "text": "SAM-Audio Models & Setup Guide\n\n1. Download SAM-Audio Model (Base or Large):\n   Repo: https://huggingface.co/Aero-Ex/ComfyUI-SamAudio\n   Files:\n   - sam_audio_base.safetensors (1.73 GB - fast, daily driver)\n   - sam_audio_large.safetensors (6.38 GB - maximum separation fidelity)\n\n   Place in folder:\n   📂 ComfyUI/models/sam-audio/\n\n2. Download T5-Base Text Encoder:\n   File: t5-base.safetensors (892 MB)\n   Repo: https://huggingface.co/Comfy-Org/t5-base/\n\n   Place in folder:\n   📂 ComfyUI/models/text_encoders/\n\n3. Tips:\n   - CFG = 1.0 (default)\n   - Set Steps = 16 or 32 with 'midpoint' method\n   - target_audio = isolated sound\n   - residual_audio = background / remainder"
+      },
+      "color": "#2a363b",
+      "bgcolor": "#3f5259"
+    },
+    {
+      "id": 1,
+      "type": "SAMAudioModelLoader",
+      "pos": [
+        -91.55468352903256,
+        -117.76742925452754
+      ],
+      "size": [
+        320,
+        80
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "model",
+          "type": "SAM_AUDIO",
+          "links": [
+            1
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SAMAudioModelLoader"
+      },
+      "widgets_values": [
+        "sam_audio_large.safetensors"
+      ],
+      "widgets_values_named": {
+        "model_name": "sam_audio_large.safetensors"
+      }
+    },
+    {
+      "id": 2,
+      "type": "LoadAudio",
+      "pos": [
+        -232.82094044665274,
+        32.45899350133277
+      ],
+      "size": [
+        514.035695884567,
+        144.47398485448247
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            22
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadAudio"
+      },
+      "widgets_values": [
+        "oldguy_16k_mono.wav",
+        ""
+      ],
+      "widgets_values_named": {
+        "audio": "oldguy_16k_mono.wav",
+        "upload": ""
+      }
+    },
+    {
+      "id": 4,
+      "type": "SAMAudioTextSeparate",
+      "pos": [
+        467.8629079151675,
+        -139.23370338404737
+      ],
+      "size": [
+        400,
+        320
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "SAM_AUDIO",
+          "link": 1
+        },
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 22
+        },
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 6
+        }
+      ],
+      "outputs": [
+        {
+          "name": "target_audio",
+          "type": "AUDIO",
+          "links": [
+            7
+          ]
+        },
+        {
+          "name": "residual_audio",
+          "type": "AUDIO",
+          "links": [
+            16
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SAMAudioTextSeparate"
+      },
+      "widgets_values": [
+        "background music, ",
+        "person speaking",
+        16,
+        "midpoint",
+        2,
+        42,
+        "fixed"
+      ],
+      "widgets_values_named": {
+        "prompt": "background music, ",
+        "negative_prompt": "person speaking",
+        "steps": 16,
+        "method": "midpoint",
+        "cfg": 2,
+        "seed": 42,
+        "control_after_generate": "fixed"
+      }
+    },
+    {
+      "id": 7,
+      "type": "CLIPLoader",
+      "pos": [
+        -127.78014498979493,
+        236.97722476220866
+      ],
+      "size": [
+        330.3797012067354,
+        114.00929847600239
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            6
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPLoader"
+      },
+      "widgets_values": [
+        "t5-base.safetensors",
+        "stable_audio",
+        "default"
+      ],
+      "widgets_values_named": {
+        "clip_name": "t5-base.safetensors",
+        "type": "stable_audio",
+        "device": "default"
+      }
+    },
+    {
+      "id": 8,
+      "type": "PreviewAudio",
+      "pos": [
+        981.0993706084531,
+        -146.0664039770184
+      ],
+      "size": [
+        610.4040487071998,
+        103.02965781032236
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewAudio"
+      },
+      "widgets_values": [],
+      "widgets_values_named": {}
+    },
+    {
+      "id": 16,
+      "type": "PreviewAudio",
+      "pos": [
+        981.6048482178596,
+        22.682368082824098
+      ],
+      "size": [
+        595.9340007974897,
+        104.18581599446918
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewAudio"
+      },
+      "widgets_values": [],
+      "widgets_values_named": {}
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      4,
+      0,
+      "SAM_AUDIO"
+    ],
+    [
+      6,
+      7,
+      0,
+      4,
+      2,
+      "CLIP"
+    ],
+    [
+      7,
+      4,
+      0,
+      8,
+      0,
+      "AUDIO"
+    ],
+    [
+      16,
+      4,
+      1,
+      16,
+      0,
+      "AUDIO"
+    ],
+    [
+      22,
+      2,
+      0,
+      4,
+      1,
+      "AUDIO"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.36028223639494744,
+      "offset": [
+        1668.1154532036433,
+        996.8155409366149
+      ]
+    },
+    "frontendVersion": "1.55.14",
+    "VHS_latentpreview": false,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true
+  },
+  "version": 0.4
+}
