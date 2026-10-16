@@ -20,8 +20,8 @@ Download converted BF16 `.safetensors` from Hugging Face:
 
 | Checkpoint | Size | Description |
 | :--- | :---: | :--- |
-| **[`sam_audio_base.safetensors`](https://huggingface.co/Aero-Ex/ComfyUI-SamAudio/blob/main/sam_audio_base.safetensors)** | 1.73 GB | 12-layer DiT, fast daily driver |
-| **[`sam_audio_large.safetensors`](https://huggingface.co/Aero-Ex/ComfyUI-SamAudio/blob/main/sam_audio_large.safetensors)** | 6.38 GB | 22-layer DiT, maximum separation precision |
+| **[`sam_audio_base.safetensors`](https://huggingface.co/Aero-Ex/ComfyUI-SamAudio/resolve/main/sam_audio_base.safetensors)** | 1.73 GB | 12-layer DiT, fast daily driver |
+| **[`sam_audio_large.safetensors`](https://huggingface.co/Aero-Ex/ComfyUI-SamAudio/resolve/main/sam_audio_large.safetensors)** | 6.38 GB | 22-layer DiT, maximum separation precision |
 
 Place downloaded model(s) into:
 ```
@@ -34,8 +34,10 @@ hf download Aero-Ex/ComfyUI-SamAudio --local-dir models/sam-audio
 ```
 
 ### 2. T5-Base Text Encoder
+All separation nodes need it. Load it with **Load CLIP**, type `stable_audio`.
+
 Download `t5-base.safetensors` from:  
-**[Comfy-Org/t5-base](https://huggingface.co/Comfy-Org/t5-base/blob/main/t5-base.safetensors)**
+**[Comfy-Org/t5-base](https://huggingface.co/Comfy-Org/t5-base/resolve/main/t5-base.safetensors)**
 
 Place into:
 ```
@@ -56,12 +58,19 @@ git clone https://github.com/Aero-Ex/ComfyUI-SamAudio.git
 
 | Node | Category | Inputs | Outputs |
 | :--- | :--- | :--- | :--- |
-| **Load SAM-Audio Model** | `audio/loaders` | `model_name` (`.safetensors` / `.pt`) | `model` |
-| **SAM-Audio Text Separate** | `audio/separation` | `model`, `audio`, `prompt`, `clip`, `steps`, `method`, `cfg`, `seed` | `target_audio`, `residual_audio` |
+| **Load SAM-Audio Model** | `audio/loaders` | `model_name` (`.safetensors`) | `model` |
+| **SAM-Audio Text Separate** | `audio/separation` | `model`, `audio`, `prompt`, `negative_prompt`, `clip`, `steps`, `method`, `cfg`, `seed` | `target_audio`, `residual_audio` |
 | **SAM-Audio Span Separate** | `audio/separation` | `model`, `audio`, `start_time`, `end_time`, `mode`, `prompt`, `clip`, `steps`, `method`, `cfg`, `seed` | `target_audio`, `residual_audio` |
 | **SAM-Audio Visual Separate** | `audio/separation` | `model`, `audio`, `images`, `mask`, `prompt`, `clip`, `steps`, `method`, `cfg`, `seed` | `target_audio`, `residual_audio` |
 
 ## Example Workflow
 
 An example workflow is included in `workflows/audio_sam_audio_separation.json`.
-# ComfyUI-SamAudio
+
+## Differences from upstream
+
+- `cfg` / `negative_prompt` are an addition; upstream has no guidance. `cfg = 1.0` matches upstream.
+- The DACVAE decoder's audio watermark is not applied.
+- Audio is downmixed to mono and resampled to 48 kHz; outputs are trimmed to the input length.
+- Codec encode/decode falls back to tiling when it runs out of VRAM, so long audio can differ slightly from a single pass.
+- `chunk_long_audio` (on by default) separates audio longer than 15 s in crossfaded 15 s chunks. The model loses the target on long clips: on a 101 s clip, one pass returned a silent target, upstream too. Turn it off to match upstream exactly.

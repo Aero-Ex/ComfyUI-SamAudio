@@ -147,25 +147,24 @@ class DACVAE(nn.Module):
         latent_dim = config.get("latent_dim", 1024)
         decoder_dim = config.get("decoder_dim", 1536)
         decoder_rates = config.get("decoder_rates", [12, 10, 8, 2])
-        codebook_dim = config.get("codebook_dim", 128)
+        self.latent_channels = config.get("codebook_dim", 128)
         self.sample_rate = config.get("sample_rate", 48000)
         self.hop_length = math.prod(encoder_rates)
 
         self.encoder = Encoder(encoder_dim=encoder_dim, encoder_rates=encoder_rates, latent_dim=latent_dim, device=device, dtype=dtype, operations=operations)
-        self.quantizer = Quantizer(in_dim=latent_dim, latent_dim=codebook_dim, device=device, dtype=dtype, operations=operations)
+        self.quantizer = Quantizer(in_dim=latent_dim, latent_dim=self.latent_channels, device=device, dtype=dtype, operations=operations)
         self.decoder = Decoder(decoder_dim=decoder_dim, decoder_rates=decoder_rates, latent_dim=latent_dim, device=device, dtype=dtype, operations=operations)
 
     def pad(self, wavs: torch.Tensor) -> torch.Tensor:
         length = wavs.size(-1)
         if length % self.hop_length != 0:
             pad_len = self.hop_length - (length % self.hop_length)
-            return F.pad(wavs, (0, pad_len), mode="reflect")
+            # reflect needs more samples than the padding; very short clips fall back to zeros
+            return F.pad(wavs, (0, pad_len), mode="reflect" if pad_len < length else "constant")
         return wavs
 
     def encode(self, wavs: torch.Tensor) -> torch.Tensor:
-        padded = self.pad(wavs)
-        z = self.encoder(padded)
-        return self.quantizer.encode(z)
+        return self.quantizer.encode(self.encoder(wavs))
 
     def decode(self, latents: torch.Tensor) -> torch.Tensor:
         emb = self.quantizer.decode(latents)

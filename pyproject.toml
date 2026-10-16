@@ -4,7 +4,7 @@ description = "Native dependency-free port of Meta SAM-Audio (Segment Anything M
 version = "1.0.0"
 license = "MIT"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 
 [project.urls]
 Repository = "https://github.com/Aero-Ex/ComfyUI-SamAudio"
