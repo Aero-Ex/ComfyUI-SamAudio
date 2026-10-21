@@ -37,7 +37,7 @@ hf download Aero-Ex/ComfyUI-SamAudio --local-dir models/sam-audio
 All separation nodes need it. Load it with **Load CLIP**, type `stable_audio`.
 
 Download `t5-base.safetensors` from:  
-**[Comfy-Org/t5-base](https://huggingface.co/Comfy-Org/t5-base/resolve/main/t5-base.safetensors)**
+**[ComfyUI-Wiki/t5-base](https://huggingface.co/ComfyUI-Wiki/t5-base/resolve/main/t5-base.safetensors)**
 
 Place into:
 ```
